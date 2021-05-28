@@ -69,7 +69,7 @@ func main() {
 
 	log.Printf("Attaching disk %s at LUN %d to VMSS VM with ID %s from VMSS %s in group %s", *diskID, *lun, *instanceID, *vmssName, *resourceGroup)
 
-	_, err = c.Update(ctx, *resourceGroup, *vmssName, *instanceID, compute.VirtualMachineScaleSetVM{
+	future, err := c.Update(ctx, *resourceGroup, *vmssName, *instanceID, compute.VirtualMachineScaleSetVM{
 		VirtualMachineScaleSetVMProperties: &compute.VirtualMachineScaleSetVMProperties{
 			StorageProfile: &compute.StorageProfile{
 				DataDisks: &dd,
@@ -78,5 +78,10 @@ func main() {
 	})
 	if err != nil {
 		log.Fatalf("Error updating VMSS VM: %s", err)
+	}
+
+	err = future.WaitForCompletionRef(ctx, c.Client)
+	if err != nil {
+		log.Fatalf("Error waiting for VMSS Update call to complete: %s", err)
 	}
 }
