@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  architect: giantswarm/architect@2.5.0
+  architect: giantswarm/architect@4.35.5
 
 workflows:
   build:
@@ -12,12 +12,9 @@ workflows:
             tags:
               only: /^v.*/
 
-      - architect/push-to-docker:
+      - architect/push-to-registries:
           context: architect
-          name: push-to-quay
-          image: "quay.io/giantswarm/azure-disk-attacher"
-          username_envar: "QUAY_USERNAME"
-          password_envar: "QUAY_PASSWORD"
+          name: push-to-registries
           requires:
             - go-build
           filters:
